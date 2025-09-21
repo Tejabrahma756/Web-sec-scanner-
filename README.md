@@ -19,4 +19,4 @@ Designed for developers/security researchers who need deeper, slower, more detai
 Tech Stack
 Python (Flask, subprocess, requests)
 Nmap, Nikto CLI tools
-HTML (Jinja2 templates for UI
+HTML (Jinja2 templates for UI)
