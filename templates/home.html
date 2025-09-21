@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Web Security Scanner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; }
+    h1 { margin-bottom: 8px; }
+    .card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; margin: 12px 0; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    input[type=text] { padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; min-width: 280px; }
+    button { padding: 10px 14px; border: 1px solid #cbd5e1; background: #f8fafc; border-radius: 10px; cursor: pointer; }
+    button:hover { background: #eef2ff; }
+    pre { white-space: pre-wrap; word-wrap: break-word; background: #0b1221; color: #e5e7eb; padding: 12px; border-radius: 10px; overflow-x: auto; }
+    small { color: #64748b; }
+  </style>
+</head>
+<body>
+  <h1>Web Security Scanner</h1>
+  <p class="card">Enter a domain or URL and run individual scans, or run all at once.</p>
+
+  <div class="card">
+    <div class="row">
+      <input id="target" type="text" placeholder="example.com or http://example.com">
+      <button onclick="scan('nmap')">Nmap</button>
+      <button onclick="scan('nikto')">Nikto</button>
+      <button onclick="scan('headers')">Security Headers</button>
+      <button onclick="scan('robots')">robots.txt</button>
+      <button onclick="scan('dirlisting')">Dir Listing</button>
+      <button onclick="scan('subdomains')">Subdomains</button>
+      <button onclick="scanAll()">Run All</button>
+    </div>
+    <small>Tip: for headers/robots/dir listing, URL can be with or without http(s). For subdomains, use the root domain (e.g., example.com).</small>
+  </div>
+
+  <div class="card">
+    <h3>Result</h3>
+    <pre id="out">No results yet.</pre>
+  </div>
+
+<script>
+function q(id){ return document.getElementById(id); }
+
+async function scan(kind){
+  const target = q('target').value.trim();
+  if(!target){ q('out').textContent = "Please enter a target."; return; }
+  const url = `/scan/${kind}?target=${encodeURIComponent(target)}`;
+  q('out').textContent = `Running ${kind}...`;
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    q('out').textContent = JSON.stringify(data, null, 2);
+  } catch (e) {
+    q('out').textContent = "Error: " + e.message;
+  }
+}
+
+async function scanAll(){
+  const target = q('target').value.trim();
+  if(!target){ q('out').textContent = "Please enter a target."; return; }
+  q('out').textContent = "Running all scanners...";
+  try {
+    const res = await fetch('/scan/all', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ target })
+    });
+    const data = await res.json();
+    q('out').textContent = JSON.stringify(data, null, 2);
+  } catch (e) {
+    q('out').textContent = "Error: " + e.message;
+  }
+}
+</script>
+</body>
+</html>
+
