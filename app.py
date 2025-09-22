@@ -161,14 +161,3 @@ def scan_all():
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
 
-# configure with your API key (set it as env var for safety)
-genai.configure(api_key=os.getenv("AIzaSyBwL83dxR8t6ZecR7B83Bvn8fYJiQW0ehU"))
-
-# load a model
-model = genai.GenerativeModel("gemini-1.5-flash")
-
-# generate content
-response = model.generate_content("Explain the scan results in simple terms")
-
-print(response.text)
-
